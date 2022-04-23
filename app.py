@@ -3,15 +3,18 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 from . import miscgens
-import os
-from pathlib import Path
-from dotenv import load_dotenv
-
-load_dotenv()
-env_path = Path('.')/'.env'
-load_dotenv(dotenv_path=env_path)
 
 def create_app():
+
+	import os
+	from pathlib import Path
+	from dotenv import load_dotenv
+
+	load_dotenv()
+	env_path = Path('.')/'.env'
+	load_dotenv(dotenv_path=env_path)
+
+
 	app = Flask(__name__, template_folder='templates')
 
 
