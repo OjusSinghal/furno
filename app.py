@@ -1,3 +1,6 @@
+from email import message
+import email
+from colorama import Cursor
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -33,7 +36,32 @@ mysql = MySQL(app)
 @app.route('/')
 @app.route('/login', methods =['GET', 'POST'])
 def login():
-    return "<h>Welcome to Furno!</h>"
+	message = ""
+
+	if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+		email = request.form['email']
+		password = request.form['password']
+		role = request.form['role']
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+		if role=='buyer':
+			query = f"select * from buyer where email='{email}' and buyerPassword='{password}'"
+			print(query)
+			cursor.execute(query)
+
+			account = cursor.fetchone()
+
+			if account:
+				session['loggedin'] = True
+				session['id'] = account['buyerid']
+				session['email'] = account['email']
+
+				message = f"Hello! {account['firstName']}"
+				return render_template("home.html", message=message)
+			else:
+				message = "Incorrect username/password"
+	
+	return render_template("login.html", message=message)
 
 @app.route('/registerBuyer', methods=['GET', 'POST'])
 def registerBuyer():
@@ -58,6 +86,8 @@ def registerBuyer():
 			message = "Account already exists"
 		elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
 			message = "Enter a valid email!"
+		elif len(contactNumber) != 10:
+			message = "Enter a valid 10 digit contact number"
 		else:
 			buyerid = miscgens.get_buyer_id(firstName, dob, email, gender)
 
