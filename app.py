@@ -3,6 +3,13 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 from . import miscgens
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+env_path = Path('.')/'.env'
+load_dotenv(dotenv_path=env_path)
 
 def create_app():
 	app = Flask(__name__, template_folder='templates')
@@ -10,10 +17,10 @@ def create_app():
 
 	app.secret_key = 'dbmsProject'
 
-	app.config['MYSQL_HOST'] = 'localhost'
-	app.config['MYSQL_USER'] = 'root'
-	app.config['MYSQL_PASSWORD'] = 'root'
-	app.config['MYSQL_DB'] = 'furnoDB'
+	app.config['MYSQL_HOST'] = os.environ['HOST']
+	app.config['MYSQL_USER'] = os.environ['USER']
+	app.config['MYSQL_PASSWORD'] = os.environ['PASSWORD']
+	app.config['MYSQL_DB'] = os.environ['DB']
 
 	return app
 
@@ -57,8 +64,7 @@ def registerBuyer():
 			if lastName == "":
 				lastName = "NULL"
 
-			query = f'insert into buyer values ({buyerid}, {firstName}, {middleName}, {lastName}, {dob}, {gender}, {contactNumber}, {email}, {password}, NULL)'
-			print(query)
+			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{dob}', '{gender}', '{contactNumber}', '{email}', '{password}', NULL)"
 			
 			cursor.execute(query)
 

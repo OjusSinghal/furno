@@ -15,4 +15,8 @@ create table buyer (
     check (2022 - year(dob) >= 18)
 );
 
+insert INTO buyer VALUES ('B101001010', 'Chetan', NULL, NULL, '2001-02-02', 'M', '9191919191', 'kuchbhi@gmail.com','kich',NULL);
+
 SELECT * from buyer;
+
+delete FROM buyer where buyerID = 'B101001010';
