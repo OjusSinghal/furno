@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div align="center">
+    <h1>Buyer Registration</h1>
+    <h2>{{ message }}</h2>
+    <form action="{{ url_for('registerBuyer')}}" method="post">
+
+        <label for="firstName">First name:</label>
+        <input id="firstName" name="firstName" placeholder="First Name" class="textbox" required><br></br>
+
+        <label for="middleName">Middle name:</label>
+        <input id="middleName" name="middleName" placeholder="Middle Name" class="textbox"><br></br>
+
+        <label for="lastName">Last name:</label>
+        <input id="lastName" name="lastName" placeholder="Last Name" class="textbox"><br></br>
+
+        <label for="dob">Date of Birth:</label>
+        <input id="dob" name="dob" placeholder="Date of Birth" type="date" required><br></br>
+
+        <label for="gender" >Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="T">T</option>
+        </select><br></br>
+
+        <label for="contactNumber">Contact Number:</label>
+        <input id="contactNumber" name="contactNumber" placeholder="Contact Number" class="textbox" required><br></br>
+
+        <label for="email">Email:</label>
+        <input id="email" name="email" placeholder="Email" class="textbox" required><br></br>
+
+        <label for="password">Password:</label>
+        <input id="password" name="password" placeholder="Password" type="password" required>
+
+        <input type="submit" class="btn" value="Register" required></br>
+        
+    </form>
+</div>
+{% endblock %}
