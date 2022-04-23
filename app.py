@@ -46,14 +46,13 @@ def login():
 
 		if role=='buyer':
 			query = f"select * from buyer where email='{email}' and buyerPassword='{password}'"
-			print(query)
 			cursor.execute(query)
 
 			account = cursor.fetchone()
 
 			if account:
 				session['loggedin'] = True
-				session['id'] = account['buyerid']
+				session['id'] = account['buyerID']
 				session['email'] = account['email']
 
 				message = f"Hello! {account['firstName']}"
