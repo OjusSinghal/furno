@@ -1,6 +1,3 @@
-from email import message
-import email
-from colorama import Cursor
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
