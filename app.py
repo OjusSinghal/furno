@@ -85,7 +85,7 @@ def registerBuyer():
 			message = "Account already exists"
 		elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
 			message = "Enter a valid email!"
-		elif len(contactNumber) != 10:
+		elif len(contactNumber) != 10 and contactNumber.isnumeric():
 			message = "Enter a valid 10 digit contact number"
 		else:
 			buyerid = miscgens.get_buyer_id(firstName, dob, email, gender)

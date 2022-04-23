@@ -19,4 +19,4 @@ insert INTO buyer VALUES ('B101001010', 'Chetan', NULL, NULL, '2001-02-02', 'M',
 
 SELECT * from buyer;
 
-delete FROM buyer where buyerID = 'B101001010';
+desc buyer;
