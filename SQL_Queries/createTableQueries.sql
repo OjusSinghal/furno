@@ -1,3 +1,5 @@
+use furno;
+
 CREATE TABLE buyer (
     buyerID CHAR(10),
     firstName VARCHAR(30) NOT NULL,
@@ -82,6 +84,7 @@ CREATE TABLE product (
     sellerID CHAR(10) NOT NULL,
     productName VARCHAR(20) NOT NULL,
     aboutProduct VARCHAR(200) NOT NULL,
+    productPrice int not null,
     category ENUM('Beds', 'Mattresses', 'Chairs', 'Tables', 'Dining', 'Sofas', 'Wardrobes', 'Other') NOT NULL,
     dimensionsHeight NUMERIC(4 , 2 ),
     dimensionsWidth NUMERIC(4 , 2 ),
@@ -102,7 +105,8 @@ CREATE TABLE product (
     CHECK (avgRating >= 0.0 AND avgRating <= 5.0),
     CHECK (stock >= 0),
     CHECK (discountMultiplier >= 0.0
-        AND discountMultiplier <= 1.0)
+        AND discountMultiplier <= 1.0),
+	check (productPrice > 0 and productPrice < 1000000)
 );
  
  
@@ -173,7 +177,7 @@ show tables;
 # drop table buyerResidesIn;
 # drop table sellerResidesIn;
 # drop table containsProduct;
-# drop table selects;
+# drop table putsIntoCart;
 # drop table reviews;
 # drop table orders;
 # drop table promoCode;
