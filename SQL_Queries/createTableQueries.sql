@@ -17,7 +17,7 @@ CREATE TABLE buyer (
     CHECK (2022 - YEAR(dob) >= 15),
     CHECK (regexp_like(buyerPassword, '[A-Z]'  COLLATE utf8mb4_0900_as_cs)
         AND regexp_like(buyerPassword, '[a-z]'  COLLATE utf8mb4_0900_as_cs)
-        AND regexp_like(buyerPassword, '[!@]'  COLLATE utf8mb4_0900_as_cs)
+        AND regexp_like(buyerPassword, '[!-@]'  COLLATE utf8mb4_0900_as_cs)
         AND (LENGTH(buyerPassword) >= 8))
 );
 
