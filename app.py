@@ -1,4 +1,4 @@
-from doctest import ELLIPSIS_MARKER
+from email import message
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -54,7 +54,7 @@ def login():
 				session['email'] = account['buyerEmailID']
 
 				message = f"Hello! {account['firstName']}"
-				return render_template("home.html", message=message)
+				return render_template("home.html", message=message, account=account)
 			else:
 				message = "Incorrect username/password"
 		else:
@@ -74,6 +74,21 @@ def login():
 				message = 'Incorrect username/Password'
 
 	return render_template("login.html", message=message)
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+	try:
+		session['loggedin']
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+		query = f"select * from buyer where buyerID='{session['id']}'"
+		cursor.execute(query)
+
+		account = cursor.fetchone()	
+
+		return (render_template("home.html", account=account))
+
+	except KeyError:
+		return (render_template("login.html", message="Your aren't logged in!"))
 
 @app.route('/register', methods=['GET', 'POST'])
 @app.route('/register/buyer', methods=['GET', 'POST'])
@@ -177,3 +192,9 @@ def registerSeller():
 
 	return render_template('registerSeller.html', message=message)
 
+@app.route('/logout')
+def logout():
+	session.pop('loggedin', None)
+	session.pop('id', None)
+	session.pop('email', None)
+	return redirect(url_for('login'))

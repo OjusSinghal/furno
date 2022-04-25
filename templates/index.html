@@ -17,15 +17,16 @@
 <body>
 
   <nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid justify-content-md-center">
+    <div class="container-fluid">
       <a class="navbar-brand" href="{{ url_for('login') }}">
         furno
       </a>
+
+      {% block navbar %}
+      {% endblock %}
+
     </div>
-
-    {% block navbar %}
-    {% endblock %}
-
+    
   </nav>
 
   {% block content %}
