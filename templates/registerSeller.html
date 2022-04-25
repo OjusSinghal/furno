@@ -1,27 +1,59 @@
-{% extends "base.html" %}
+{% extends "index.html" %}
 {% block content %}
-<div align="center">
-    <h1>Seller Registration</h1>
-    <h2>{{ message }}</h2>
-    <form action="{{ url_for('registerSeller')}}" method="post">
+<div>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+            <h1 class="text-center">Seller Registration</h1>
+            
+            <div class="text-center">
+                {{ message }}
+            </div>
 
-        <label for="sellerName">Seller Name:</label>
-        <input id="sellerName" name="sellerName" placeholder="Seller Name" class="textbox" required><br></br>
-        
-        <label for="userContactNumber">Contact Number:</label>
-        <input id="userContactNumber" name="userContactNumber" placeholder="Contact Number" class="textbox" required><br></br>
+            <form action="{{ url_for('registerSeller')}}" method="post">
 
-        <label for="userEmailID">Email:</label>
-        <input id="userEmailID" name="userEmailID" placeholder="Email" class="textbox" required><br></br>
+                <div class="form-floating py-2">
+                    <input id="sellerName" name="sellerName" type="text" class="form-control" placeholder="Seller Name"
+                        required>
+                    <label for="sellerName">Seller Name <span class="fw-light">(Required)</span></label>
+                </div>
 
-        <label for="userPassword">Password:</label>
-        <input id="userPassword" name="userPassword" placeholder="Password" type="password" required><br></br>
 
-        <label for="GST">GST:</label>
-        <input id="GST" name="GST" placeholder="GST" class="="textbox"><br></br>
+                <div class="form-floating py-2">
+                    <input id="userContactNumber" name="userContactNumber" type="text" class="form-control" placeholder="Contact Number"
+                        required>
+                    <label for="userContactNumber">Contact Number <span class="fw-light">(Required)</span></label>
+                </div>
 
-        <input type="submit" class="btn" value="Register" required><br>
+                <div class="form-floating py-2">
+                    <input id="userEmailID" name="userEmailID" type="email" class="form-control" placeholder="example@example.com"
+                        required>
+                    <label for="userEmailID">Email Address <span class="fw-light">(Required)</span></label>
+                </div>
 
-    <p class="bottom">Already have an account? <a class="bottom" href="{{url_for('login')}}"> Sign In here</a></p>
+                <div class="form-floating py-2">
+                    <input id="userPassword" name="userPassword" type="password" class="form-control" placeholder="password"
+                        required>
+                    <label for="userPassword">Password</label>
+                </div>
+
+                <div class="form-floating py-2">
+                    <input id="GST" name="GST" type="text" class="form-control" placeholder="GST">
+                    <label for="GST">GST</label>
+                </div>
+
+                <div class="py-2">
+                </div>
+
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-outline-success btn-lg" value="register" required>Register</button>
+                </div>
+            </form>
+            <div class="text-center py-2">
+                <p class="bottom">Already have an account? <a class="bottom" href="{{url_for('login')}}"> Sign In here</a></p>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
 </div>
 {% endblock %}

@@ -1,27 +1,74 @@
-{% extends "base.html" %}
+{% extends "index.html" %}
 {% block content %}
-<div align="center">
-    <h1>Login</h1>
-    <h2> {{ message }} </h2>
-    <form action="{{ url_for('login')}}" method="post">
 
-        <label for="email">Email</label>
-        <input id="email" name="email" placeholder="Email" required><br></br>
+<div>
+  <div class="container py-4">
+    <div class="row">
+      <div class="col">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner py-5">
+            <div class="carousel-item active">
+              <img src="{{ url_for('static', filename='first.jpg')}}" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="{{ url_for('static', filename='second.jpg')}}" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="{{ url_for('static', filename='third.jpg')}}" class="d-block w-100" alt="...">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+      <div class="col">
+        <h1 class="text-center">Login</h1>
 
-        <label for="password">Password</label>
-        <input id="password" name="password" placeholder="Password" type="password" required><br></br>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-        
-        <label for="role" >Login as:</label>
-        <select id="role" name="role" required>
-            <option value="buyer">Buyer</option>
-            <option value="seller">Seller</option>
-        </select><br></br>
+        <form action="{{ url_for('login')}}" method="post">
+          <div class="form-floating py-2">
+            <input id="email" name="email" type="email" class="form-control" placeholder="example@example.com" required>
+            <label for="email">Email Address</label>
+          </div>
 
-        <input type="submit" class="btn" value="Login" required></br>
-    </form>
+          <div class="form-floating py-2">
+            <input id="password" name="password" type="password" class="form-control" placeholder="password" required>
+            <label for="password">Password</label>
+          </div>
 
-    <p class="bottom">Don't have an account? Register as a <a class="bottom" href="{{url_for('registerBuyer')}}"> buyer</a> or <a class="bottom" href="{{url_for('registerSeller')}}">a seller</a>.</p>
+          <div class="form-floating py-2">
+            <select id="role" name="role" class="form-select" required>
+              <option value="buyer">Buyer</option>
+              <option value="seller">Seller</option>
+            </select>
+            <label for="role">Login As</label>
+          </div>
 
+          <div class="py-2">
+          </div>
+
+          <div class="d-grid gap-2 col-6 mx-auto">
+            <button type="submit" class="btn btn-outline-success btn-lg" value="login" required>Login</button>
+          </div>
+        </form>
+
+        <p class="text-center py-2">
+          Don't have an account? Register as a <a class="bottom" href="{{url_for('registerBuyer')}}"> buyer</a></span> or a <a class="bottom" href="{{url_for('registerSeller')}}"> seller</a>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
