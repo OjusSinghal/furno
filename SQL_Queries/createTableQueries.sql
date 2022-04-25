@@ -1,3 +1,5 @@
+use furnodb;
+
 create table buyer (
     buyerID char(10) primary key,
     firstName varchar(50) not null,
@@ -154,3 +156,4 @@ create table reviews(
  
  
 show tables;
+select * from seller;

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div align="center">
+    <h1>Seller Registration</h1>
+    <h2>{{ message }}</h2>
+    <form action="{{ url_for('registerSeller')}}" method="post">
+
+        <label for="sellerName">Seller Name:</label>
+        <input id="sellerName" name="sellerName" placeholder="Seller Name" class="textbox" required><br></br>
+        
+        <label for="userContactNumber">Contact Number:</label>
+        <input id="userContactNumber" name="userContactNumber" placeholder="Contact Number" class="textbox" required><br></br>
+
+        <label for="userEmailID">Email:</label>
+        <input id="userEmailID" name="userEmailID" placeholder="Email" class="textbox" required><br></br>
+
+        <label for="userPassword">Password:</label>
+        <input id="userPassword" name="userPassword" placeholder="Password" type="password" required><br></br>
+
+        <label for="GST">GST:</label>
+        <input id="GST" name="GST" placeholder="GST" class="="textbox"><br></br>
+
+        <input type="submit" class="btn" value="Register" required><br>
+
+    <p class="bottom">Already have an account? <a class="bottom" href="{{url_for('login')}}"> Sign In here</a></p>
+</div>
+{% endblock %}

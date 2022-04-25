@@ -1,3 +1,4 @@
+from doctest import ELLIPSIS_MARKER
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -56,10 +57,26 @@ def login():
 				return render_template("home.html", message=message)
 			else:
 				message = "Incorrect username/password"
-	
+		else:
+			query = f"select * from seller where userEmailID='{email}' and userPassword='{password}'"
+			cursor.execute(query)
+
+			account = cursor.fetchone()	
+
+			if account:
+				session['loggedin'] = True
+				session['id'] = account['sellerID']
+				session['email'] = account['userEmailID']
+
+				message = f"Hello! You are a seller {account['sellerName']}"
+				return render_template("sellerHome.html", message=message)		
+			else:
+				message = 'Incorrect username/Password'
+
 	return render_template("login.html", message=message)
 
-@app.route('/registerBuyer', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register/buyer', methods=['GET', 'POST'])
 def registerBuyer():
 	message = ""
 
@@ -95,10 +112,54 @@ def registerBuyer():
 
 			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{dob}', '{gender}', '{contactNumber}', '{email}', '{password}', NULL)"
 			
-			cursor.execute(query)
+			try:
+				cursor.execute(query)
+			except MySQLdb._exceptions.OperationalError:
+				message = "You should be at least 15 years old to register!"
+				return render_template('registerBuyer.html', message=message)
 
 			mysql.connection.commit()
 
 			message = "Registration successful!"
 
 	return render_template('registerBuyer.html', message=message)
+
+@app.route('/register/seller', methods=['GET', 'POST'])
+def registerSeller():
+
+	message = ""
+	
+	if request.method == 'POST':
+
+		userPassword = request.form['userPassword']
+		userContactNumber = request.form['userContactNumber']
+		userEmailID = request.form['userEmailID']
+		sellerName = request.form['sellerName']
+		gst = request.form['GST']
+
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+		cursor.execute('select * from seller where userEmailID=%s', (userEmailID, ))
+		exists = cursor.fetchone()
+
+		if exists:
+			message = ""
+		elif not re.match(r'[^@]+@[^@]+\.[^@]+', userEmailID):
+			message = "Enter a valid email!"
+		elif len(userContactNumber) != 10 and userContactNumber.isnumeric():
+			message = "Enter a valid 10 digit contact number"
+		elif gst!="" and len(gst) != 15:
+			message = "Enter a valid 15 digit GST number, leave blank if not available."
+		else:
+			sellerID = miscgens.get_seller_id(sellerName, userContactNumber, userEmailID)
+
+			if gst == "":
+				gst = "NULL"
+
+			query = f"insert into seller values ('{sellerID}', '{userPassword}', '{userContactNumber}', '{userEmailID}', '{sellerName}', {gst})"
+
+			cursor.execute(query)
+			mysql.connection.commit()
+
+			message = "Registration successful!"
+
+	return render_template('registerSeller.html', message=message)
