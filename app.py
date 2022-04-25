@@ -43,7 +43,7 @@ def login():
 		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
 		if role=='buyer':
-			query = f"select * from buyer where email='{email}' and buyerPassword='{password}'"
+			query = f"select * from buyer where buyerEmailID='{email}' and buyerPassword='{password}'"
 			cursor.execute(query)
 
 			account = cursor.fetchone()
@@ -51,14 +51,14 @@ def login():
 			if account:
 				session['loggedin'] = True
 				session['id'] = account['buyerID']
-				session['email'] = account['email']
+				session['email'] = account['buyerEmailID']
 
 				message = f"Hello! {account['firstName']}"
 				return render_template("home.html", message=message)
 			else:
 				message = "Incorrect username/password"
 		else:
-			query = f"select * from seller where userEmailID='{email}' and userPassword='{password}'"
+			query = f"select * from seller where sellerEmailID='{email}' and sellerPassword='{password}'"
 			cursor.execute(query)
 
 			account = cursor.fetchone()	
@@ -66,7 +66,7 @@ def login():
 			if account:
 				session['loggedin'] = True
 				session['id'] = account['sellerID']
-				session['email'] = account['userEmailID']
+				session['email'] = account['sellerEmailID']
 
 				message = f"Hello! You are a seller {account['sellerName']}"
 				return render_template("sellerHome.html", message=message)		
@@ -92,7 +92,7 @@ def registerBuyer():
 		password = request.form['password']
 
 		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-		cursor.execute('select * from buyer where email=%s', (email, ))
+		cursor.execute('select * from buyer where buyerEmailID=%s', (email, ))
 		exists = cursor.fetchone()
 
 		if exists:
@@ -110,14 +110,18 @@ def registerBuyer():
 			if lastName == "":
 				lastName = "NULL"
 
-			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{dob}', '{gender}', '{contactNumber}', '{email}', '{password}', NULL)"
+			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{email}', '{password}', '{contactNumber}', '{dob}', '{gender}', NULL)"
 			
 			try:
 				cursor.execute(query)
 			except MySQLdb._exceptions.OperationalError:
-				message = "You should be at least 15 years old to register!"
-				return render_template('registerBuyer.html', message=message)
-
+				if re.fullmatch(r'[a-z0-9@#$%^&+=]{8,}', password):
+					message = "Your age should at least be 15!"
+					return render_template('registerBuyer.html', message=message)
+				else:
+					message = "Your password should contain at least one special character, one character and be of at least 8 length" 
+					return render_template('registerBuyer.html', message=message)
+		
 			mysql.connection.commit()
 
 			message = "Registration successful!"
@@ -138,7 +142,7 @@ def registerSeller():
 		gst = request.form['GST']
 
 		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-		cursor.execute('select * from seller where userEmailID=%s', (userEmailID, ))
+		cursor.execute('select * from seller where sellerEmailID=%s', (userEmailID, ))
 		exists = cursor.fetchone()
 
 		if exists:
@@ -155,11 +159,21 @@ def registerSeller():
 			if gst == "":
 				gst = "NULL"
 
-			query = f"insert into seller values ('{sellerID}', '{userPassword}', '{userContactNumber}', '{userEmailID}', '{sellerName}', {gst})"
+			query = f"insert into seller values ('{sellerID}', '{sellerName}', '{userEmailID}', '{userPassword}', '{userContactNumber}', {gst})"
 
-			cursor.execute(query)
+			try:
+				cursor.execute(query)
+			except MySQLdb._exceptions.OperationalError:
+				if re.fullmatch(r'[a-z0-9@#$%^&+=]{8,}', userPassword):
+					message = "Your age should at least be 15!"
+					return render_template('registerSeller.html', message=message)
+				else:
+					message = "Your password should contain at least one special character, one character and be of at least 8 length" 
+					return render_template('registerSeller.html', message=message)
+					
 			mysql.connection.commit()
 
 			message = "Registration successful!"
 
 	return render_template('registerSeller.html', message=message)
+

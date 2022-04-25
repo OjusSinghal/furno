@@ -15,12 +15,11 @@ CREATE TABLE buyer (
     PRIMARY KEY (buyerID),
     CHECK (buyerID LIKE 'B%'),
     CHECK (2022 - YEAR(dob) >= 15),
-    CHECK (regexp_like(buyerPassword, '[A-Z]'  COLLATE utf8mb4_0900_as_cs)
-        AND regexp_like(buyerPassword, '[a-z]'  COLLATE utf8mb4_0900_as_cs)
-        AND regexp_like(buyerPassword, '[!-@]'  COLLATE utf8mb4_0900_as_cs)
+    CHECK (regexp_like(buyerPassword, '[A-Z]')
+        AND regexp_like(buyerPassword, '[a-z]')
+        AND regexp_like(buyerPassword, '[!-@]')
         AND (LENGTH(buyerPassword) >= 8))
 );
-
 
 
 CREATE TABLE seller (
@@ -32,10 +31,10 @@ CREATE TABLE seller (
     GST NUMERIC(15 , 0 ) UNIQUE,
     PRIMARY KEY (sellerID),
     CHECK (sellerID LIKE 'S%'),
-    CHECK (sellerPassword LIKE '%[A-Z]%'
-        AND sellerPassword LIKE '%[a-z]%'
-        AND sellerPassword LIKE '%[!@#$%a^&*()-_+=.,;:"`~]%'
-        AND LENGTH(sellerPassword) >= 8)
+    CHECK (regexp_like(sellerPassword, '[A-Z]'  COLLATE utf8mb4_0900_as_cs)
+        AND regexp_like(sellerPassword, '[a-z]'  COLLATE utf8mb4_0900_as_cs)
+        AND regexp_like(sellerPassword, '[!-@]'  COLLATE utf8mb4_0900_as_cs)
+        AND (LENGTH(sellerPassword) >= 8))
 );
  
 CREATE TABLE userAddress (
@@ -171,7 +170,6 @@ CREATE TABLE reviews (
         REFERENCES buyer (buyerID),
     CHECK (rating >= 0 AND rating <= 5)
 );
- 
  
 show tables;
 # drop table buyerResidesIn;
