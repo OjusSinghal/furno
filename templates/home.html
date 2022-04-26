@@ -3,13 +3,13 @@
 {% block navbar %}
 <ul class="nav nav-pills justify-content-end">
   <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="#">Hey, {{ account['firstName'] }}!</a>
+    <a class="nav-link active" aria-current="page" href="#">Hey, {{ session['name'] }}!</a>
   </li>
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Profile</a>
     <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href=" {{ url_for('profile', role=session['role'] , id=account['buyerID']) }}">View Profile</a></li>
-      <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+      <li><a class="dropdown-item" href=" {{ url_for('profile', role=session['role'] , id=session['id']) }}">View Profile</a></li>
+      <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}">Edit Profile</a></li>
       <li><hr class="dropdown-divider"></li>
       <li><a class="dropdown-item" href="{{ url_for('change_password', role=session['role']) }}">Change Password</a></li>
     </ul>

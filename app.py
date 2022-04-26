@@ -52,6 +52,7 @@ def login():
 				session['id'] = account['buyerID']
 				session['email'] = account['buyerEmailID']
 				session['role'] = 'buyer'
+				session['name'] = account['firstName']
 
 				message = f"Hello! {account['firstName']}"
 				return render_template("home.html", message=message, account=account)
@@ -68,9 +69,10 @@ def login():
 				session['id'] = account['sellerID']
 				session['email'] = account['sellerEmailID']
 				session['role'] = 'seller'
+				session['name'] = account['sellerName']
 
-				message = f"Hello! You are a seller {account['sellerName']}"
-				return render_template("sellerHome.html", message=message)		
+				message = f"Hello! {account['sellerName']}"
+				return render_template("home.html", message=message, account=account)		
 			else:
 				message = 'Incorrect username/Password'
 
@@ -268,7 +270,7 @@ def change_password(role):
 
 			password = cursor.fetchone()
 
-			if password['buyerPassword'] != currentPass:
+			if password['sellerPassword'] != currentPass:
 				message = "Incorrect current password!"
 
 				return render_template("change_password.html", account=account, message=message, session=session)
@@ -302,7 +304,7 @@ def profile(role, id):
 	except KeyError:
 		return (render_template("login.html", message="Your aren't logged in!"))
 
-	if session['id'][0] == "b":
+	if session['id'][0].lower() == "b":
 		#buyer profile page
 		query = f"select * from buyer where buyerID='{session['id']}'"
 
@@ -324,4 +326,95 @@ def profile(role, id):
 
 		return render_template("seller_profile.html", account=account)
 
+@app.route('/profile/edit', methods=['GET', 'POST'])
+def edit_profile():
+	message = ""
+	try:
+		session['loggedin']
+	except KeyError:
+		return (render_template("login.html", message="Your aren't logged in!"))
 
+	if request.method == "POST":
+		if session['id'][0].lower() == "b":
+			#buyer profile page
+			query = f"select * from buyer where buyerID='{session['id']}'"
+
+			cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+			cursor.execute(query)
+
+			account = cursor.fetchone()		
+
+			middleName = request.form['middleName']
+			lastName = request.form['lastName']
+			contact = request.form['contact']
+
+			if not contact.isnumeric() or len(contact) != 10:
+				message = "Please enter a valid contact number!"
+				return render_template("buyer_edit_profile.html", account=account, message=message)	
+
+			update_eq = f"update buyer set middleName='{middleName}', lastName='{lastName}', buyerContactNumber='{contact}' where buyerID='{session['id']}'"
+			cursor.execute(update_eq)
+
+			mysql.connection.commit()
+
+			message = "Successfully updated!"
+			cursor.execute(query)
+
+			account = cursor.fetchone()
+
+			return render_template("buyer_edit_profile.html", account=account, message=message)
+		else:
+			query = f"select * from seller where sellerID='{session['id']}'"
+
+			cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+			cursor.execute(query)
+
+			account = cursor.fetchone()		
+
+			contact = request.form['contact']
+			gst = request.form['gst']
+
+			if not contact.isnumeric() or len(contact) != 10:
+				message = "Please enter a valid contact number!"
+				return render_template("seller_edit_profile.html", account=account, message=message)
+
+			if len(gst)!=15 and gst!="NULL":
+				message = "Please enter a valid GST number!"
+				return render_template("seller_edit_profile.html", account=account, message=message)				
+
+			update_eq = f"update seller set sellerContactNumber='{contact}',  gst='{gst}' where buyerID='{session['id']}'"
+			cursor.execute(update_eq)
+
+			mysql.connection.commit()
+
+			message = "Successfully updated!"
+			cursor.execute(query)
+
+			account = cursor.fetchone()
+
+			return render_template("seller_edit_profile.html", account=account, message=message)
+
+
+	if session['id'][0].lower() == "b":
+		#buyer profile page
+		query = f"select * from buyer where buyerID='{session['id']}'"
+
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+		cursor.execute(query)
+
+		account = cursor.fetchone()
+
+		return render_template("buyer_edit_profile.html", account=account, message=message)
+
+	else:
+		#seller profile page
+		query = f"select * from seller where sellerID='{session['id']}'"
+
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+		cursor.execute(query)
+
+		account = cursor.fetchone()
+
+		return render_template("seller_profile.html", account=account, message=message)
+	
+	return render_template("buyer_edit_profile.html", account=account, message=message)
