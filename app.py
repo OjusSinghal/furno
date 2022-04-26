@@ -1,4 +1,3 @@
-from email import message
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -52,6 +51,7 @@ def login():
 				session['loggedin'] = True
 				session['id'] = account['buyerID']
 				session['email'] = account['buyerEmailID']
+				session['role'] = 'buyer'
 
 				message = f"Hello! {account['firstName']}"
 				return render_template("home.html", message=message, account=account)
@@ -67,6 +67,7 @@ def login():
 				session['loggedin'] = True
 				session['id'] = account['sellerID']
 				session['email'] = account['sellerEmailID']
+				session['role'] = 'seller'
 
 				message = f"Hello! You are a seller {account['sellerName']}"
 				return render_template("sellerHome.html", message=message)		
@@ -198,3 +199,129 @@ def logout():
 	session.pop('id', None)
 	session.pop('email', None)
 	return redirect(url_for('login'))
+
+
+@app.route('/changepassword/<role>', methods=['GET', 'POST'])
+def change_password(role):
+
+	message = ""
+	try:
+		session['loggedin']
+	except KeyError:
+		return (render_template("login.html", message="Your aren't logged in!"))
+	
+	query = f"select * from buyer where buyerID='{session['id']}'"
+	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+	cursor.execute(query)
+
+	account = cursor.fetchone()
+
+	if session['id'][0].lower() == "b":
+		
+		
+		if request.method == 'POST':
+
+			currentPass = request.form['currentPassword']
+			newPass = request.form['newPassword']
+			confirmPass = request.form['confirmPassword']
+
+			query = f"select buyerPassword from buyer where buyerID='{session['id']}'"
+			
+			cursor.execute(query)
+
+			password = cursor.fetchone()
+
+			if password['buyerPassword'] != currentPass:
+				message = "Incorrect current password!"
+
+				return render_template("change_password.html", account=account, message=message, session=session)
+			
+			if newPass != confirmPass:
+				message = "New password and confirm password do not match!"
+
+				return render_template("change_password.html", account=account, message=message, session=session)
+
+			if re.fullmatch(r'[a-z0-9@#$%^&+=]{8,}', newPass):
+
+				query = f"update buyer set buyerPassword='{newPass}' where buyerID='{session['id']}'"
+				cursor.execute(query)
+
+				mysql.connection.commit()
+
+				message="Successfully changed password!"
+				return render_template("change_password.html", account=account, message=message, session=session)
+
+			else:
+				message = "Password should contain at least one special character and 8 length"
+				return render_template("change_password.html", account=account, message=message, session=session)
+
+	else:
+		if request.method == 'POST':
+
+			currentPass = request.form['currentPassword']
+			newPass = request.form['newPassword']
+			confirmPass = request.form['confirmPassword']
+
+			query = f"select sellerPassword from seller where sellerID='{session['id']}'"
+			
+			cursor.execute(query)
+
+			password = cursor.fetchone()
+
+			if password['buyerPassword'] != currentPass:
+				message = "Incorrect current password!"
+
+				return render_template("change_password.html", account=account, message=message, session=session)
+			
+			if newPass != confirmPass:
+				message = "New password and confirm password do not match!"
+
+				return render_template("change_password.html", account=account, message=message, session=session)
+
+			if re.fullmatch(r'[a-z0-9@#$%^&+=]{8,}', newPass):
+
+				query = f"update seller set sellerPassword='{newPass}' where sellerID='{session['id']}'"
+				cursor.execute(query)
+
+				mysql.connection.commit()
+
+				message="Successfully changed password!"
+				return render_template("change_password.html", account=account, message=message, session=session)
+
+			else:
+				message = "Password should contain at least one special character and 8 length"
+				return render_template("change_password.html", account=account, message=message, session=session)		
+
+	return render_template("change_password.html", account=account, message=message, session=session)
+
+@app.route('/profile/<role>/<id>', methods=['GET', 'POST'])
+def profile(role, id):
+	
+	try:
+		session['loggedin']
+	except KeyError:
+		return (render_template("login.html", message="Your aren't logged in!"))
+
+	if session['id'][0] == "b":
+		#buyer profile page
+		query = f"select * from buyer where buyerID='{session['id']}'"
+
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+		cursor.execute(query)
+
+		account = cursor.fetchone()
+
+		return render_template("buyer_profile.html", account=account)
+
+	else:
+		#seller profile page
+		query = f"select * from seller where sellerID='{session['id']}'"
+
+		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+		cursor.execute(query)
+
+		account = cursor.fetchone()
+
+		return render_template("seller_profile.html", account=account)
+
+

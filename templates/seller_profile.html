@@ -1,0 +1,31 @@
+{% extends "home.html" %}
+{% block content %}
+<div class="row">
+    <div class="col"></div>
+    <div class="col py-5">
+        <form>
+            <fieldset disabled>
+              <legend>Profile</legend>
+              <div class="mb-3">
+                <label for="sellerName" class="form-label">Seller Name</label>
+                <input type="text" id="firstName" class="form-control" placeholder={{ account['sellerName'] }}>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email ID</label>
+                <input type="text" id="email" class="form-control" placeholder={{ account['sellerEmailID'] }}>
+              </div>
+              <div class="mb-3">
+                <label for="contact" class="form-label">Contact Number</label>
+                <input type="text" id="contact" class="form-control" placeholder={{ account['sellerContactNumber'] }}>
+              </div>
+              <div class="mb-3">
+                <label for="GST" class="form-label">GST</label>
+                <input type="text" id="GST" class="form-control" placeholder={{ account['GST'] }}>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </fieldset>
+          </form>
+    </div>
+    <div class="col"></div>
+</div>
+{% endblock %}
