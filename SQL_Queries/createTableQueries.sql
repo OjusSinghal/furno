@@ -10,6 +10,7 @@ CREATE TABLE buyer (
     buyerContactNumber NUMERIC(10 , 0 ) NOT NULL,
     dob DATE NOT NULL,
     gender ENUM('M', 'F', 'N', 'U'),
+    accountActiveStatus boolean not null default true,
     PRIMARY KEY (buyerID),
     CHECK (buyerID LIKE 'B%'),
     CHECK (2022 - YEAR(dob) >= 15),
@@ -37,6 +38,7 @@ CREATE TABLE seller (
     sellerPassword VARCHAR(22) NOT NULL,
     sellerContactNumber NUMERIC(10 , 0 ) NOT NULL,
     GST NUMERIC(15 , 0 ) UNIQUE,
+    accountActiveStatus boolean not null default true,
     PRIMARY KEY (sellerID),
     CHECK (sellerID LIKE 'S%'),
     CHECK (REGEXP_LIKE(sellerPassword, '[A-Z]')
@@ -107,6 +109,7 @@ CREATE TABLE product (
     discountMultiplier NUMERIC(4 , 3 ) NOT NULL,
     stock INT NOT NULL,
     images BLOB,
+    productActiveStatus boolean not null default true,
     PRIMARY KEY (productID),
     FOREIGN KEY (sellerID)
         REFERENCES seller (sellerID)

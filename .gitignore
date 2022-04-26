@@ -1,5 +1,5 @@
 venv/
-/env
+furno_env/
 .vscode
 .env
 
