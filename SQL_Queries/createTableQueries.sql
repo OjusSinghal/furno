@@ -13,13 +13,8 @@ CREATE TABLE buyer (
     PRIMARY KEY (buyerID),
     CHECK (buyerID LIKE 'B%'),
     CHECK (2022 - YEAR(dob) >= 15),
-<<<<<<< HEAD
     CHECK (REGEXP_LIKE(buyerPassword, '[A-Z]')
         AND REGEXP_LIKE(buyerPassword, '[!-@]')
-=======
-    CHECK (regexp_like(buyerPassword, '[a-z]')
-        AND regexp_like(buyerPassword, '[!-@]')
->>>>>>> af8ab671708a16e6762438aea41d0e7e12da032c
         AND (LENGTH(buyerPassword) >= 8))
 );
 
@@ -44,13 +39,8 @@ CREATE TABLE seller (
     GST NUMERIC(15 , 0 ) UNIQUE,
     PRIMARY KEY (sellerID),
     CHECK (sellerID LIKE 'S%'),
-<<<<<<< HEAD
     CHECK (REGEXP_LIKE(sellerPassword, '[A-Z]')
         AND REGEXP_LIKE(sellerPassword, '[!-@]')
-=======
-    CHECK (regexp_like(sellerPassword, '[a-z]' ) 
-        AND regexp_like(sellerPassword, '[!-@]' )
->>>>>>> af8ab671708a16e6762438aea41d0e7e12da032c
         AND (LENGTH(sellerPassword) >= 8))
 );
  
@@ -246,7 +236,3 @@ show tables;
 # drop table product;
 # drop table seller;
 
-<<<<<<< HEAD
-=======
-SELECT * from seller;
->>>>>>> af8ab671708a16e6762438aea41d0e7e12da032c
