@@ -1,43 +1,99 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="row">
-    <div class="col"></div>
-    <div class="col py-5">
-        <form>
-            <fieldset disabled>
-              <legend>Profile</legend>
-              <div class="mb-3">
-                <label for="firstName" class="form-label">First Name</label>
-                <input type="text" id="firstName" class="form-control" placeholder={{ account['firstName'] }}>
-              </div>
-              <div class="mb-3">
-                <label for="middleName" class="form-label">Middle Name</label>
-                <input type="text" id="middleName" class="form-control" placeholder={{ account['middleName'] }}>
-              </div>
-              <div class="mb-3">
-                <label for="lastName" class="form-label">Last Name</label>
-                <input type="text" id="lastName" class="form-control" placeholder={{ account['lastName'] }}>
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email ID</label>
-                <input type="text" id="email" class="form-control" placeholder={{ account['buyerEmailID'] }}>
-              </div>
-              <div class="mb-3">
-                <label for="contact" class="form-label">Contact Number</label>
-                <input type="text" id="contact" class="form-control" placeholder={{ account['buyerContactNumber'] }}>
-              </div>
-              <div class="mb-3">
-                <label for="dob" class="form-label">Date of Birth</label>
-                <input type="text" id="dob" class="form-control" placeholder={{ account['dob'] }}>
-              </div>
-              <div class="mb-3">
-                <label for="gender" class="form-label">Gender</label>
-                <input type="text" id="gender" class="form-control" placeholder={{ account['gender'] }}>
-              </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </fieldset>
-          </form>
+<div class="container">
+  <div class="row">
+    <div class="col py-5 px-5">
+      <form>
+        <fieldset disabled>
+          <legend>Profile</legend>
+          <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" id="firstName" class="form-control" placeholder={{ account['firstName'] }}>
+          </div>
+          <div class="mb-3">
+            <label for="middleName" class="form-label">Middle Name</label>
+            <input type="text" id="middleName" class="form-control" placeholder={{ account['middleName'] }}>
+          </div>
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" id="lastName" class="form-control" placeholder={{ account['lastName'] }}>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email ID</label>
+            <input type="text" id="email" class="form-control" placeholder={{ account['buyerEmailID'] }}>
+          </div>
+          <div class="mb-3">
+            <label for="contact" class="form-label">Contact Number</label>
+            <input type="text" id="contact" class="form-control" placeholder={{ account['buyerContactNumber'] }}>
+          </div>
+          <div class="mb-3">
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="text" id="dob" class="form-control" placeholder={{ account['dob'] }}>
+          </div>
+          <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <input type="text" id="gender" class="form-control" placeholder={{ account['gender'] }}>
+          </div>
+        </fieldset>
+      </form>
     </div>
-    <div class="col"></div>
+    <div class="col py-5 px-5">
+      {% for i in range(address|length) %}
+      <legend>Address-{{i+1}}</legend>
+      <form>
+        <fieldset disabled>
+          <div class="row">
+            <div class="col">
+              <div class="mb-3">
+                <label for="street" class="form-label">Street</label>
+                <input type="text" id="street" class="form-control" placeholder={{ address[i]['street'] }}>
+              </div>
+            </div>
+            <div class="col">
+
+              <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" id="city" class="form-control" placeholder={{ address[i]['city'] }}>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="mb-3">
+                <label for="userState" class="form-label">State</label>
+                <input type="text" id="userState" class="form-control" placeholder={{ address[i]['userState'] }}>
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label for="zip" class="form-label">Zip</label>
+                <input type="text" id="zip" class="form-control" placeholder={{ address[i]['zip'] }}>
+              </div>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+      {% endfor %}
+    </div>
+    <div class="col py-5 px-5">
+      <legend>Saved Cards</legend>
+      {% for i in range(cards|length) %}
+      <form>
+        <fieldset disabled>
+          <div class="row">
+            <div class="col">
+              <div class="mb-3">
+                <label for="card" class="form-label">{{ i+1 }}</label>
+                <input type="text" id="street" class="form-control" placeholder={{ cards[i]['cardNumber'] }}>
+              </div>
+            </div>
+        </fieldset>
+      </form>
+      {% endfor %}
+    </div>
+  </div>
 </div>
+
 {% endblock %}

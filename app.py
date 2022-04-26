@@ -128,7 +128,7 @@ def registerBuyer():
 			if lastName == "":
 				lastName = "NULL"
 
-			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{email}', '{password}', '{contactNumber}', '{dob}', '{gender}', NULL)"
+			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{email}', '{password}', '{contactNumber}', '{dob}', '{gender}')"
 			
 			try:
 				cursor.execute(query)
@@ -139,7 +139,7 @@ def registerBuyer():
 				else:
 					message = "Your password should contain at least one special character, one character and be of at least 8 length" 
 					return render_template('registerBuyer.html', message=message)
-		
+
 			mysql.connection.commit()
 
 			message = "Registration successful!"
@@ -188,7 +188,7 @@ def registerSeller():
 				else:
 					message = "Your password should contain at least one special character, one character and be of at least 8 length" 
 					return render_template('registerSeller.html', message=message)
-					
+
 			mysql.connection.commit()
 
 			message = "Registration successful!"
@@ -313,7 +313,16 @@ def profile(role, id):
 
 		account = cursor.fetchone()
 
-		return render_template("buyer_profile.html", account=account)
+		address_query = f"select * from buyerResidesIn where buyerID='{session['id']}'"
+
+		cursor.execute(address_query)
+		address=cursor.fetchall()
+
+		card_query = f"select * from paymentCards where buyerID='{session['id']}'"
+		cursor.execute(card_query)
+		cards = cursor.fetchall()
+
+		return render_template("buyer_profile.html", account=account, address=address, cards=cards)
 
 	else:
 		#seller profile page
