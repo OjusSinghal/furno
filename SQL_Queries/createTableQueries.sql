@@ -10,15 +10,23 @@ CREATE TABLE buyer (
     buyerContactNumber NUMERIC(10 , 0 ) NOT NULL,
     dob DATE NOT NULL,
     gender ENUM('M', 'F', 'N', 'U'),
-    -- Male, Female, Non_Binary, Unspecified
-    cardNumbers JSON,
     PRIMARY KEY (buyerID),
     CHECK (buyerID LIKE 'B%'),
     CHECK (2022 - YEAR(dob) >= 15),
-    CHECK (regexp_like(buyerPassword, '[A-Z]')
-        AND regexp_like(buyerPassword, '[a-z]')
-        AND regexp_like(buyerPassword, '[!-@]')
+    CHECK (REGEXP_LIKE(buyerPassword, '[A-Z]')
+        AND REGEXP_LIKE(buyerPassword, '[!-@]')
         AND (LENGTH(buyerPassword) >= 8))
+);
+
+CREATE TABLE paymentCards (
+    cardNumber CHAR(16),
+    buyerID CHAR(10),
+    PRIMARY KEY (cardNumber , buyerID),
+    FOREIGN KEY (buyerID)
+        REFERENCES buyer (buyerID)
+        ON DELETE CASCADE,
+    CHECK (LENGTH(cardNumber) = 16),
+    CHECK (REGEXP_LIKE(cardNumber, '^[0-9]*$'))
 );
 
 
@@ -31,35 +39,46 @@ CREATE TABLE seller (
     GST NUMERIC(15 , 0 ) UNIQUE,
     PRIMARY KEY (sellerID),
     CHECK (sellerID LIKE 'S%'),
-    CHECK (regexp_like(sellerPassword, '[A-Z]'  COLLATE utf8mb4_0900_as_cs)
-        AND regexp_like(sellerPassword, '[a-z]'  COLLATE utf8mb4_0900_as_cs)
-        AND regexp_like(sellerPassword, '[!-@]'  COLLATE utf8mb4_0900_as_cs)
+    CHECK (REGEXP_LIKE(sellerPassword, '[A-Z]')
+        AND REGEXP_LIKE(sellerPassword, '[!-@]')
         AND (LENGTH(sellerPassword) >= 8))
 );
  
-CREATE TABLE userAddress (
-    addressID CHAR(10),
-    street VARCHAR(50) NOT NULL,
-    city VARCHAR(50) NOT NULL,
-    userState VARCHAR(50) NOT NULL,
-    zip NUMERIC(6 , 0 ) NOT NULL,
-    PRIMARY KEY (addressID)
-);
+# CREATE TABLE userAddress (
+#     addressID CHAR(10),
+#     street VARCHAR(50) NOT NULL,
+#     city VARCHAR(50) NOT NULL,
+#     userState VARCHAR(50) NOT NULL,
+#     zip NUMERIC(6 , 0 ) NOT NULL,
+#     PRIMARY KEY (addressID)
+# );
 
 CREATE TABLE sellerResidesIn (
     addressID CHAR(10),
     sellerID CHAR(10),
-    PRIMARY KEY (sellerID , addressID),
-    FOREIGN KEY (sellerID) REFERENCES seller (sellerID),
-    FOREIGN KEY (addressID) REFERENCES userAddress (addressID)
+    street VARCHAR(50) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    userState VARCHAR(50) NOT NULL,
+    zip NUMERIC(6 , 0 ) NOT NULL,
+    PRIMARY KEY (addressID),
+    FOREIGN KEY (sellerID)
+        REFERENCES seller (sellerID)
+        ON DELETE CASCADE
 );
+
+
  
 CREATE TABLE buyerResidesIn (
     addressID CHAR(10),
     buyerID CHAR(10),
-    PRIMARY KEY (buyerID , addressID),
-    FOREIGN KEY (buyerID) REFERENCES buyer (buyerID),
-    FOREIGN KEY (addressID) REFERENCES userAddress (addressID)
+    street VARCHAR(50) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    userState VARCHAR(50) NOT NULL,
+    zip NUMERIC(6 , 0 ) NOT NULL,
+    PRIMARY KEY (addressID),
+    FOREIGN KEY (buyerID)
+        REFERENCES buyer (buyerID)
+        ON DELETE CASCADE
 );
 
  
@@ -77,13 +96,14 @@ CREATE TABLE promoCode (
         AND discountMultiplier <= 1.0)
 );
 
+
  
 CREATE TABLE product (
     productID CHAR(16),
     sellerID CHAR(10) NOT NULL,
     productName VARCHAR(20) NOT NULL,
     aboutProduct VARCHAR(200) NOT NULL,
-    productPrice int not null,
+    productPrice INT NOT NULL,
     category ENUM('Beds', 'Mattresses', 'Chairs', 'Tables', 'Dining', 'Sofas', 'Wardrobes', 'Other') NOT NULL,
     dimensionsHeight NUMERIC(4 , 2 ),
     dimensionsWidth NUMERIC(4 , 2 ),
@@ -96,7 +116,9 @@ CREATE TABLE product (
     stock INT NOT NULL,
     images BLOB,
     PRIMARY KEY (productID),
-    FOREIGN KEY (sellerID) REFERENCES seller (sellerID),
+    FOREIGN KEY (sellerID)
+        REFERENCES seller (sellerID)
+        ON DELETE CASCADE,
     CHECK (dimensionsHeight > 0.0
         AND dimensionsWidth > 0.0
         AND dimensionsLength > 0.0),
@@ -105,17 +127,22 @@ CREATE TABLE product (
     CHECK (stock >= 0),
     CHECK (discountMultiplier >= 0.0
         AND discountMultiplier <= 1.0),
-	check (productPrice > 0 and productPrice < 1000000)
+    CHECK (productPrice > 0
+        AND productPrice < 1000000)
 );
  
  
  
 CREATE TABLE putsIntoCart (
     buyerID CHAR(10),
-    productID CHAR(10),
+    productID CHAR(16),
     quantity INT NOT NULL,
-    FOREIGN KEY (buyerID) REFERENCES buyer (buyerID),
-    FOREIGN KEY (productID) REFERENCES product (productID),
+    FOREIGN KEY (buyerID)
+        REFERENCES buyer (buyerID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (productID)
+        REFERENCES product (productID)
+        ON DELETE CASCADE,
     PRIMARY KEY (buyerID , productID),
     CHECK (quantity > 0)
 );
@@ -128,17 +155,20 @@ CREATE TABLE orders (
     amountDue INT NOT NULL,
     deliveryTime TIMESTAMP,
     trackingID CHAR(16) UNIQUE,
-    addressID CHAR(10) NOT NULL,
+    addressID CHAR(10),
     paymentMethod VARCHAR(16) NOT NULL,
-    buyerID CHAR(16) NOT NULL,
+    buyerID CHAR(16),
     codeName VARCHAR(15),
     PRIMARY KEY (orderID),
     FOREIGN KEY (codeName)
-        REFERENCES promoCode (codeName),
+        REFERENCES promoCode (codeName)
+        ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (addressID)
-        REFERENCES userAddress (addressID),
+        REFERENCES buyerResidesIn (addressID)
+        ON DELETE SET NULL,
     FOREIGN KEY (buyerID)
-        REFERENCES buyer (buyerID),
+        REFERENCES buyer (buyerID)
+        ON DELETE SET NULL,
     CHECK (deliveryTime > orderTime),
     CHECK (totalPayment > 0)
 );
@@ -150,9 +180,11 @@ CREATE TABLE containsProduct (
     fulfillmentStatus ENUM('U', 'D', 'R', 'C') NOT NULL,
     PRIMARY KEY (orderID , productID),
     FOREIGN KEY (orderID)
-        REFERENCES orders (orderID),
+        REFERENCES orders (orderID)
+        ON DELETE CASCADE,
     FOREIGN KEY (productID)
-        REFERENCES product (productID),
+        REFERENCES product (productID)
+        ON DELETE CASCADE,
     CHECK (quantity > 0)
 );
 -- #"Unfulfilled", "Delivered", "Returned", "Canceled"
@@ -165,13 +197,33 @@ CREATE TABLE reviews (
     reviewTime TIMESTAMP NOT NULL,
     PRIMARY KEY (buyerID , productID),
     FOREIGN KEY (productID)
-        REFERENCES product (productID),
+        REFERENCES product (productID)
+        ON DELETE CASCADE,
     FOREIGN KEY (buyerID)
-        REFERENCES buyer (buyerID),
+        REFERENCES buyer (buyerID)
+        ON DELETE CASCADE,
     CHECK (rating >= 0 AND rating <= 5)
 );
- 
+
+# delete from buyer;
+# delete from paymentCards;
+# delete from seller;
+# delete from sellerResidesIn;
+# delete from buyerResidesIn;
+# delete from promoCode;
+
+# select * from buyer;
+# select * from paymentCards;
+# select * from seller;
+# select * from sellerResidesIn;
+# select * from buyerResidesIn; 
+# select * from promoCode;
+# select * from orders;
+
+
 show tables;
+
+# drop table paymentCards;
 # drop table buyerResidesIn;
 # drop table sellerResidesIn;
 # drop table containsProduct;
@@ -183,3 +235,4 @@ show tables;
 # drop table userAddress;
 # drop table product;
 # drop table seller;
+
