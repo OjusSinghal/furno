@@ -43,15 +43,7 @@ CREATE TABLE seller (
         AND REGEXP_LIKE(sellerPassword, '[!-@]')
         AND (LENGTH(sellerPassword) >= 8))
 );
- 
-# CREATE TABLE userAddress (
-#     addressID CHAR(10),
-#     street VARCHAR(50) NOT NULL,
-#     city VARCHAR(50) NOT NULL,
-#     userState VARCHAR(50) NOT NULL,
-#     zip NUMERIC(6 , 0 ) NOT NULL,
-#     PRIMARY KEY (addressID)
-# );
+
 
 CREATE TABLE sellerResidesIn (
     addressID CHAR(10),
@@ -151,7 +143,6 @@ CREATE TABLE orders (
     orderID CHAR(16),
     totalPayment INT NOT NULL,
     orderTime TIMESTAMP NOT NULL,
-    fullfillmentStatus ENUM('U', 'D', 'R', 'C') NOT NULL,
     amountDue INT NOT NULL,
     deliveryTime TIMESTAMP,
     trackingID CHAR(16) UNIQUE,
@@ -205,20 +196,27 @@ CREATE TABLE reviews (
     CHECK (rating >= 0 AND rating <= 5)
 );
 
+
 # delete from buyer;
 # delete from paymentCards;
 # delete from seller;
 # delete from sellerResidesIn;
 # delete from buyerResidesIn;
 # delete from promoCode;
+# delete from orders;
+# delete from containsProduct;
 
 # select * from buyer;
 # select * from paymentCards;
 # select * from seller;
 # select * from sellerResidesIn;
 # select * from buyerResidesIn; 
+# select * from product;
 # select * from promoCode;
+# select * from putsIntoCart;
 # select * from orders;
+# select * from containsProduct;
+# select * from reviews;
 
 
 show tables;
