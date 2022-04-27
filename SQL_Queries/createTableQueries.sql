@@ -199,41 +199,41 @@ CREATE TABLE reviews (
     CHECK (rating >= 0 AND rating <= 5)
 );
 
+ 
+-- # delete from buyer;
+-- # delete from paymentCards;
+-- # delete from seller;
+-- # delete from sellerResidesIn;
+-- # delete from buyerResidesIn;
+-- # delete from promoCode;
+-- # delete from orders;
+-- # delete from containsProduct;
 
-# delete from buyer;
-# delete from paymentCards;
-# delete from seller;
-# delete from sellerResidesIn;
-# delete from buyerResidesIn;
-# delete from promoCode;
-# delete from orders;
-# delete from containsProduct;
-
-# select * from buyer;
-# select * from paymentCards;
-# select * from seller;
-# select * from sellerResidesIn;
-# select * from buyerResidesIn; 
-# select * from product;
-# select * from promoCode;
-# select * from putsIntoCart;
-# select * from orders;
-# select * from containsProduct;
-# select * from reviews;
+-- select * from buyer;
+-- select * from paymentCards;
+-- select * from seller;
+-- select * from sellerResidesIn;
+-- select * from buyerResidesIn; 
+-- select * from product;
+-- select * from promoCode;
+-- select * from putsIntoCart;
+-- select * from orders;
+-- select * from containsProduct;
+-- select * from reviews;
 
 
 show tables;
 
-# drop table paymentCards;
-# drop table buyerResidesIn;
-# drop table sellerResidesIn;
-# drop table containsProduct;
-# drop table putsIntoCart;
-# drop table reviews;
-# drop table orders;
-# drop table promoCode;
-# drop table buyer;
-# drop table userAddress;
-# drop table product;
-# drop table seller;
+-- # drop table paymentCards;
+-- # drop table buyerResidesIn;
+-- # drop table sellerResidesIn;
+-- # drop table containsProduct;
+-- # drop table putsIntoCart;
+-- # drop table reviews;
+-- # drop table orders;
+-- # drop table promoCode;
+-- # drop table buyer;
+-- # drop table userAddress;
+-- # drop table product;
+-- # drop table seller;
 
