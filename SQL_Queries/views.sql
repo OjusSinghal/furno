@@ -1,4 +1,4 @@
-use furno_practice;
+use furno;
 
 -- Buyer profile for the buyer to see for themselves
 create view buyerProfile as select firstName, middleName, lastName, buyerEmailID as EmailID, 
