@@ -1,12 +1,8 @@
-from ast import keyword
-from email import message
-from unicodedata import name
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 import miscgens
-from google_images_search import GoogleImagesSearch
 
 def create_app():
 
@@ -91,7 +87,7 @@ def login():
 				session['name'] = account['sellerName']
 
 				message = f"Hello! {account['sellerName']}"
-				return redirect(url_for("home", message=message, account=account, top=get_nearby_best(account)))		
+				return render_template("seller_home.html", message=message, account=account)		
 			else:
 				message = 'Incorrect username/Password'
 
@@ -427,7 +423,7 @@ def edit_profile():
 
 		return render_template("seller_profile.html", account=account, message=message)
 	
-@app.route('/product/<productID>')
+@app.route('/product/<productID>', methods=['GET', 'POST'])
 def product_page(productID):
 
 	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -437,7 +433,12 @@ def product_page(productID):
 
 	product = cursor.fetchone()
 
-	return render_template("product.html", product=product)
+	review_query = f"select *,firstName from reviews,buyer where productID='{product['productID']}' and reviews.buyerID=buyer.buyerID"
+	cursor.execute(review_query)
+
+	reviews = cursor.fetchall()
+
+	return render_template("product.html", product=product, reviews=reviews)
 
 @app.route('/search')
 def search_product():
@@ -446,18 +447,10 @@ def search_product():
 	keyword = request.args.get('search')
 	
 	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-	query = f"select * from product where productName like '%{keyword}%'"
+	query = f"select *,sellerName from product,seller where productName like '%{keyword}%' and product.sellerID=seller.sellerID"
 	cursor.execute(query)
 	productList = cursor.fetchall()
 
-	for product in productList:
-		seller_query = f"select sellerName from seller where sellerID='{product['sellerID']}'"
-		cursor.execute(seller_query)
-
-		name = cursor.fetchone()
-
-		product['sellerName'] = name['sellerName']
-	
 	if len(productList) == 0:
 		message = f"Total results found: 0"
 
@@ -465,3 +458,16 @@ def search_product():
 		message = f"Total results found: {len(productList)}"
 
 	return render_template("search.html", productList=productList, message=message)
+
+@app.route("/cart")
+def go_to_cart():
+	
+	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+	buyerID = session['id']
+	
+	query = f"select * from product, putsIntoCart where product.productID = putsIntoCart.productID and buyerID='{buyerID}'"
+
+	cursor.execute(query)
+	cart = cursor.fetchall()
+
+	return render_template("view_cart.html", cart=cart)

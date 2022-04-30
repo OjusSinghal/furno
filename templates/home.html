@@ -6,7 +6,7 @@
     <a class="nav-link active" aria-current="page" href="#">Hey, {{ session['name'] }}!</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" aria-current="page" href="#">Your Cart</a>
+    <a class="nav-link" aria-current="page" href="{{ url_for('go_to_cart') }}">Your Cart</a>
   </li>
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"

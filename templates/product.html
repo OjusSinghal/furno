@@ -49,7 +49,23 @@
                     </div>
                 </div>
             </div>
-            <div class="col"></div>
+            <div class="container">
+                <div class="card mb-3 py-4 px-4">
+                    <h4 class="card-title">Reviews</h4>
+                    <div class="card-body px-5">
+                        <ul class="list-group list-group-flush">
+                            {% for i in reviews %}
+                            <li class="list-group-item">
+                                <p class="card-text"><h6>By:</h6> {{ i['firstName'] }}</p>
+                                <p class="card-text"><h6>Time:</h6> {{ i['reviewTime'] }}</p>
+                                <p class="card-text"><h6>Rating:</h6> {{ i['rating'] }}/5.0</p>
+                                <p class="card-text"><h6>Review:</h6> {{ i['reviewContent'] }}</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     {% endblock %}
