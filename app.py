@@ -1,3 +1,4 @@
+from select import select
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -97,13 +98,28 @@ def login():
 def home():
 	try:
 		session['loggedin']
-		cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-		query = f"select * from buyer where buyerID='{session['id']}'"
-		cursor.execute(query)
+		if session['role'] == 'buyer':
 
-		account = cursor.fetchone()	
-		
-		return (render_template("home.html", account=account, top=get_nearby_best(account)))
+			cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+			query = f"select * from buyer where buyerID='{session['id']}'"
+			cursor.execute(query)
+
+			account = cursor.fetchone()	
+			
+			return (render_template("home.html", account=account, top=get_nearby_best(account)))
+
+		else:
+			cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+			query = f"select * from seller where sellerID='{session['id']}'"
+			cursor.execute(query)
+
+			account = cursor.fetchone()	
+
+			product_query = f"select *,sellerName from product,seller where product.sellerID='{session['id']}'"
+			cursor.execute(product_query)
+
+			product = cursor.fetchall()
+			return (render_template("seller_home.html", account=account, product=product))
 
 	except KeyError:
 		return (render_template("login.html", message="Your aren't logged in!"))
