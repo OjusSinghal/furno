@@ -5,13 +5,21 @@
   <li class="nav-item">
     <a class="nav-link active" aria-current="page" href="#">Hey, {{ session['name'] }}!</a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" aria-current="page" href="#">Your Cart</a>
+  </li>
   <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Profile</a>
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+      aria-expanded="false">Profile</a>
     <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href=" {{ url_for('profile', role=session['role'] , id=session['id']) }}">View Profile</a></li>
+      <li><a class="dropdown-item" href=" {{ url_for('profile', role=session['role'] , id=session['id']) }}">View
+          Profile</a></li>
       <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}">Edit Profile</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item" href="{{ url_for('change_password', role=session['role']) }}">Change Password</a></li>
+      <li>
+        <hr class="dropdown-divider">
+      </li>
+      <li><a class="dropdown-item" href="{{ url_for('change_password', role=session['role']) }}">Change Password</a>
+      </li>
     </ul>
   </li>
   <li class="nav-item">
@@ -21,4 +29,75 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
+  <div class="row py-4">
+    <div class="col-3">
+      This is sidebar
+    </div>
+    <div class="col-9">
+      <div class="card">
+        <div class="card-body">
+          <form method="get" action="{{ url_for('search_product') }}">
+            <div class="container">
+              <div class="row">
+                <div class="col-11">
+                  <div class="form-floating">
+                    <input id="search" name="search" type="text" class="form-control" placeholder="Search" required>
+                    <label for="search">Search Here</label>
+                  </div>
+                </div>
+                <div class="col-1">
+                  <button type="submit" class="btn btn-base" value="search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="feather feather-search">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="30" y1="30" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% block result%}
+      <h2 class="py-4">Popular around you</h2>
+      <!--
+      <div>
+        {% for i in top %}
+        <div class="card py-4 px-4" style="width: 20rem;">
+          <img class="card-img" src="{{ i['imageLink'] }}" alt="product image">
+          <h5 class="card-title"> {{ i['productName'] }}</h5>
+          <p>Available at: {{ i['productPrice'] }}</p>
+          <a href="{{ url_for('product_page', productID=i['productID']) }}" class="btn btn-primary">Read More</a>
+        </div>
+        <br>
+        {% endfor %}
+      </div>
+    -->
+      <div>
+        {% for i in top %}
+        <div class="card mb-3 py-4 px-4">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img src="{{ i['imageLink'] }}" class="img-fluid rounded-start" alt="{{ i['productName'] }}">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body px-5">
+                <h5 class="card-title">{{ i['productName'] }}</h5>
+                <p class="card-text">Available at: &#x20b9; {{ i['productPrice'] }}</p>
+                <a href="{{ url_for('product_page', productID=i['productID']) }}" class="btn btn-primary">Read More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endblock %}
+  </div>
+</div>
+</div>
+
 {% endblock %}

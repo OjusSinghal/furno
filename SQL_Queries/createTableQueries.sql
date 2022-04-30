@@ -236,4 +236,3 @@ show tables;
 -- # drop table userAddress;
 -- # drop table product;
 -- # drop table seller;
-

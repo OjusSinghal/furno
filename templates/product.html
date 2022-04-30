@@ -1,0 +1,55 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-10 py-4">
+            <h1 class="text-justify">
+                {{ product['productName'] }}
+            </h1>
+            <div class="container">
+                <div class="card mb-3 py-4 px-4">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ product['imageLink'] }}" class="img-fluid rounded-start py-4"
+                                alt="{{ product['productName'] }}">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body px-5">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <h5>Price </h5> {{ product['productPrice'] }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h5>Dimensions</h5> {{ product['dimensionsHeight']}} x {{
+                                        product['dimensionsWidth']}} x {{ product['dimensionsLength'] }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h5>Weight </h5> {{ product['productWeight']}}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h5>Material </h5> {{ product['material']}}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h5>Brand </h5> {{ product['brand']}}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h5>Average Rating </h5> {{ product['avgRating']}}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <h5>Stock</h5> {{ product['stock']}}
+                                    </li>
+                                </ul>
+                                <div class="card-text">
+                                    {{ product['aboutProduct']}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+    {% endblock %}

@@ -1,8 +1,12 @@
+from ast import keyword
+from email import message
+from unicodedata import name
 from flask import Flask, appcontext_popped, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
-from . import miscgens
+import miscgens
+from google_images_search import GoogleImagesSearch
 
 def create_app():
 
@@ -30,6 +34,20 @@ def create_app():
 app = create_app()
 mysql = MySQL(app)
 
+def get_nearby_best(account):
+	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+	city_query = f"select city from buyerresidesin where buyerid='{account['buyerID']}'"
+	cursor.execute(city_query)
+	city = cursor.fetchone()
+
+
+	query = f"select * from buyerresidesin NATURAL JOIN orders NATURAL JOIN containsProduct NATURAL JOIN product where city = '{city['city']}' and product.avgRating>3.5 order by product.avgRating;"
+
+	cursor.execute(query)
+	top = cursor.fetchall()
+
+	return top
+
 @app.route('/')
 @app.route('/login', methods =['GET', 'POST'])
 def login():
@@ -48,6 +66,7 @@ def login():
 			account = cursor.fetchone()
 
 			if account:
+
 				session['loggedin'] = True
 				session['id'] = account['buyerID']
 				session['email'] = account['buyerEmailID']
@@ -55,7 +74,7 @@ def login():
 				session['name'] = account['firstName']
 
 				message = f"Hello! {account['firstName']}"
-				return render_template("home.html", message=message, account=account)
+				return redirect(url_for("home", message=message, account=account, top=get_nearby_best(account)))
 			else:
 				message = "Incorrect username/password"
 		else:
@@ -72,7 +91,7 @@ def login():
 				session['name'] = account['sellerName']
 
 				message = f"Hello! {account['sellerName']}"
-				return render_template("home.html", message=message, account=account)		
+				return redirect(url_for("home", message=message, account=account, top=get_nearby_best(account)))		
 			else:
 				message = 'Incorrect username/Password'
 
@@ -87,8 +106,8 @@ def home():
 		cursor.execute(query)
 
 		account = cursor.fetchone()	
-
-		return (render_template("home.html", account=account))
+		
+		return (render_template("home.html", account=account, top=get_nearby_best(account)))
 
 	except KeyError:
 		return (render_template("login.html", message="Your aren't logged in!"))
@@ -128,18 +147,9 @@ def registerBuyer():
 			if lastName == "":
 				lastName = "NULL"
 
-			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{email}', '{password}', '{contactNumber}', '{dob}', '{gender}')"
-			
-			try:
-				cursor.execute(query)
-			except MySQLdb._exceptions.OperationalError:
-				if re.fullmatch(r'[a-z0-9@#$%^&+=]{8,}', password):
-					message = "Your age should at least be 15!"
-					return render_template('registerBuyer.html', message=message)
-				else:
-					message = "Your password should contain at least one special character, one character and be of at least 8 length" 
-					return render_template('registerBuyer.html', message=message)
+			query = f"insert into buyer values ('{buyerid}', '{firstName}', '{middleName}', '{lastName}', '{email}', '{password}', '{contactNumber}', '{dob}', '{gender}',1)"
 
+			cursor.execute(query)
 			mysql.connection.commit()
 
 			message = "Registration successful!"
@@ -177,18 +187,9 @@ def registerSeller():
 			if gst == "":
 				gst = "NULL"
 
-			query = f"insert into seller values ('{sellerID}', '{sellerName}', '{userEmailID}', '{userPassword}', '{userContactNumber}', {gst})"
-
-			try:
-				cursor.execute(query)
-			except MySQLdb._exceptions.OperationalError:
-				if re.fullmatch(r'[a-z0-9@#$%^&+=]{8,}', userPassword):
-					message = "Your age should at least be 15!"
-					return render_template('registerSeller.html', message=message)
-				else:
-					message = "Your password should contain at least one special character, one character and be of at least 8 length" 
-					return render_template('registerSeller.html', message=message)
-
+			query = f"insert into seller values ('{sellerID}', '{sellerName}', '{userEmailID}', '{userPassword}', '{userContactNumber}', {gst}, 1)"
+			
+			cursor.execute(query)
 			mysql.connection.commit()
 
 			message = "Registration successful!"
@@ -426,4 +427,41 @@ def edit_profile():
 
 		return render_template("seller_profile.html", account=account, message=message)
 	
-	return render_template("buyer_edit_profile.html", account=account, message=message)
+@app.route('/product/<productID>')
+def product_page(productID):
+
+	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+	query = f"select * from product where productID='{productID}'"
+	cursor.execute(query)
+
+	product = cursor.fetchone()
+
+	return render_template("product.html", product=product)
+
+@app.route('/search')
+def search_product():
+	
+	message = ""
+	keyword = request.args.get('search')
+	
+	cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+	query = f"select * from product where productName like '%{keyword}%'"
+	cursor.execute(query)
+	productList = cursor.fetchall()
+
+	for product in productList:
+		seller_query = f"select sellerName from seller where sellerID='{product['sellerID']}'"
+		cursor.execute(seller_query)
+
+		name = cursor.fetchone()
+
+		product['sellerName'] = name['sellerName']
+	
+	if len(productList) == 0:
+		message = f"Total results found: 0"
+
+	else:
+		message = f"Total results found: {len(productList)}"
+
+	return render_template("search.html", productList=productList, message=message)
