@@ -34,6 +34,9 @@ flask run
 #### Login Page
 ![](images/first.png)
 
+#### Registration Page
+![](images/fifth.png)
+
 #### Home Page
 ![](images/second.png)
 
@@ -42,3 +45,6 @@ flask run
 
 #### View Profile
 ![](images/fourth.png)
+
+#### Product 
+![](images/sixth.png)
