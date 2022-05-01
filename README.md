@@ -29,3 +29,16 @@ Finally, to run the application
 ```bash
 flask run
 ```
+
+## Screenshots
+#### Login Page
+![](images/first.png)
+
+#### Home Page
+![](images/second.png)
+
+#### Search Results
+![](images/third.png)
+
+#### View Profile
+![](images/fourth.png)
