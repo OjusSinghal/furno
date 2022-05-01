@@ -1,6 +1,8 @@
 # furno
-### Getting Started
-The project uses Python, MySQL and Flask framework. Make sure to install the same. 
+Course project for CSE202 (	Fundamentals of Database Management System) at IIIT-D for Winter 2022 semester.
+
+## Project Setup
+The project uses Python, MySQL, Bootstrap and Flask framework. Make sure to install the required. 
 To get the required libraries:
 ```bash
 pip install -r requirements.txt
@@ -14,9 +16,12 @@ Add the following in the .env file
 HOST=hostName
 USER=username
 PASSWORD=password
-DB=databaseName
+DB=furno
 ```
-Export the project name to enviornment variable
+Now, lets create our database and add some data for testing.
+Navigate to the file "dataDump\furnoWithImages.sql" and run the complete sql script to create the required database, tables and dump data.
+
+Time to export the project name to enviornment variable
 ```bash
 export FLASK_APP=furno
 ```
